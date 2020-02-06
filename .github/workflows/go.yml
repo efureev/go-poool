@@ -1,4 +1,4 @@
-name: 'Go package: Poool'
+name: 'Go package'
 on: [push]
 jobs:
 
