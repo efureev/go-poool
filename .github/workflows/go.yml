@@ -1,4 +1,4 @@
-name: Go
+name: 'Go package: Poool'
 on: [push]
 jobs:
 
@@ -26,7 +26,7 @@ jobs:
 
     - name: Build
       run: go build -v .
-    
+
     - name: Test
       run: |
         go test -race -coverprofile=./coverage.out
