@@ -4,6 +4,7 @@ import (
 	"sync/atomic"
 )
 
+// Job interface
 type Job interface {
 	// Wait blocks until Job has been processed or cancelled
 	Wait()

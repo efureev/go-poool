@@ -2,6 +2,7 @@ package poool
 
 import "sync"
 
+// Pool interface
 type Pool interface {
 
 	// Queue queues the work to be run, and starts processing immediately
