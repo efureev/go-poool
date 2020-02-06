@@ -13,3 +13,70 @@ go get -u github.com/efureev/go-poool
 ```
 
 ## Examples
+
+```go
+package main
+
+import (
+	"time"
+
+	"github.com/efureev/go-poool"
+	"github.com/efureev/go-shutdown"
+)
+
+func main() {
+
+	p := poool.New(3)
+
+	ticker := time.NewTicker(3 * time.Second)
+	fn := createJobFn(100 * time.Millisecond)
+
+	count := 0
+	doneJobs := make(chan poool.Job)
+	defer close(doneJobs)
+
+	go func(fn func(poool.Job) (interface{}, error)) {
+		defer println(`timer stop..`)
+		for {
+			select {
+			case <-ticker.C:
+				count++
+
+				for i := 0; i < 5; i++ {
+					j := p.Queue(fn)
+					println(`>> add job: `, j)
+					doneJobs <- j
+				}
+
+				if count == 5 {
+					ticker.Stop()
+					return
+				}
+			}
+		}
+	}(fn)
+
+	go func() {
+		for j := range doneJobs {
+			j.Wait()
+
+			println(`<< job done: `, j.Value(), `, error: `, j.Error())
+		}
+	}()
+
+	shutdown.
+		OnDestroy(func(done chan<- bool) {
+			p.Close()
+			done <- true
+		}).
+		Wait()
+
+}
+
+func createJobFn(d time.Duration) poool.JobFn {
+	return func(poool.Job) (interface{}, error) {
+		time.Sleep(d)
+		return true, nil
+	}
+}
+```
