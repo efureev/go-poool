@@ -65,9 +65,8 @@ func main() {
 	}()
 
 	shutdown.
-		OnDestroy(func(done chan<- bool) {
+		OnDestroy(func() {
 			p.Close()
-			done <- true
 		}).
 		Wait()
 
